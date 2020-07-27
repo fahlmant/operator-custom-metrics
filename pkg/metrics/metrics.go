@@ -27,11 +27,7 @@ func StartMetrics(config metricsConfig) error {
 	// Register metrics only when the metric list is provided by the operator
 	fmt.Println("REGISTERING METRICS")
 	if config.collectorList != nil {
-		err := RegisterMetrics(config.collectorList)
-		if err != nil {
-			log.Error(err, "Something")
-			return err
-		}
+		RegisterMetrics(config.collectorList)
 	}
 
 	http.Handle(config.metricsPath, promhttp.Handler())
@@ -44,12 +40,8 @@ func StartMetrics(config metricsConfig) error {
 
 // RegisterMetrics takes the list of metrics to be registered from the user and
 // registers to prometheus.
-func RegisterMetrics(list []prometheus.Collector) error {
+func RegisterMetrics(list []prometheus.Collector) {
 	for _, metric := range list {
-		err := prometheus.Register(metric)
-		if err != nil {
-			return err
-		}
+		prometheus.MustRegister(metric)
 	}
-	return nil
 }
